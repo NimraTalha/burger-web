@@ -10,6 +10,7 @@ import Testimonal from '../app/components/Testimonal';
 import Footer from '../app/components/Footer';
 import Menu from '../app/components/Menu';
 import Burger from '../app/components/Burger';
+import Reservation from '../app/components/Reservation';
 
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
      <Menu/>
      <Offers/>
      <Card/>
+     <Reservation/>
      <Testimonal/>
      <Footer/>
 
