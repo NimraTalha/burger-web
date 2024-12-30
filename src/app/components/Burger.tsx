@@ -1,33 +1,15 @@
-import React from 'react';
+interface BurgerProps {
+  burgers?: {
+    id: number;
+    title: string;
+    category: string;
+    price: string;
+    src: string;
+    bgcolor: string;
+  }[];
+}
 
-const Burger = () => {
-  const burgers = [
-    {
-      id: 4,
-      title: "Cheese Burger",
-      category: "Cheesy",
-      price: "220.00",
-      src: "./images/png-burger1.png",
-      bgcolor: "bg-red-400",
-    },
-    {
-      id: 5,
-      title: "BBQ Burger",
-      category: "Smoky",
-      price: "270.00",
-      src: "./images/images.avif",
-      bgcolor: "bg-orange-400",
-    },
-    {
-      id: 6,
-      title: "Classic Burger",
-      category: "Traditional",
-      price: "210.00",
-      src: "./images/burger-2.png",
-      bgcolor: "bg-blue-400",
-    },
-  ];
-
+const Burger: React.FC<BurgerProps> = ({ burgers = [] }) => {
   return (
     <div className="p-1 flex flex-wrap items-center justify-center mb-6">
       {burgers.map((burger) => (

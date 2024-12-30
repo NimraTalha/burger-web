@@ -1,7 +1,7 @@
 import React from 'react';
 import Burger from './Burger';
 
-const ProductList = () => {
+const ProductList: React.FC = () => {
   const firstThreeBurgers = [
     {
       id: 1,
@@ -31,6 +31,7 @@ const ProductList = () => {
 
   return (
     <div>
+      {/* Passing burgers as a prop to the Burger component */}
       <Burger burgers={firstThreeBurgers} />
     </div>
   );
