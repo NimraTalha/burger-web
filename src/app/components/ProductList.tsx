@@ -31,7 +31,7 @@ const ProductList: React.FC = () => {
 
   return (
     <div>
-      {/* Passing burgers as a prop to the Burger component */}
+      
       <Burger burgers={firstThreeBurgers} />
     </div>
   );

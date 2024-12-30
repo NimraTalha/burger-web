@@ -8,9 +8,10 @@ import Offers from '../app/components/Offers';
 import Card from '../app/components/Card';
 import Testimonal from '../app/components/Testimonal';
 import Footer from '../app/components/Footer';
-import Menu from '../app/components/Menu';
+import Home from '../app/components/Menu';
 import Burger from '../app/components/Burger';
 import Reservation from '../app/components/Reservation';
+import ProductCard from '../app/components/ProductCard';
 
 
 const App = () => {
@@ -22,11 +23,13 @@ const App = () => {
      <ProductList/>
      <Banner/>
      <Burger/>
-     <Menu/>
+     <Home/>
      <Offers/>
      <Card/>
      <Reservation/>
+     <ProductCard/>
      <Testimonal/>
+     
      <Footer/>
 
 

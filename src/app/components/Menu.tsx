@@ -1,100 +1,218 @@
-import React from 'react';
-import { AiOutlineShoppingCart } from 'react-icons/ai'; // Import the shopping cart icon
+"use client";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import ProductCard from "@/app/components/ProductCard";
+import { Product } from "@/pages/types";
 
-const ProductCardGrid = () => {
-  const productImages = [
-    "/images/bbq.jpg",
-    "/images/beef.jpg",
-    "/images/beefcheese.jpg",
-    "/images/cheese.jpg",
-    "/images/chickencheese.jpg",
-    "/images/classicbeef.webp",
-    "/images/gourmet.webp",
-    "/images/hamburger.jpg",
-    "/images/zingerburger.jpg"
-  ];
+const Home = () => {
+  const [products, setProducts] = useState<Product[]>([]); // Initial value is array
+  const [cart, setCart] = useState<Product[]>([]);
+  const [showCart, setShowCart] = useState(false);
+  const [isCheckout, setIsCheckout] = useState(false);
+  const router = useRouter();
 
-  // Array of burger names corresponding to the images
-  const burgerNames = [
-    "BBQ Burger",
-    "Beef Burger",
-    "Beef Cheese Burger",
-    "Cheese Burger",
-    "Chicken Cheese Burger",
-    "Classic Beef Burger",
-    "Gourmet Burger",
-    "Hamburger",
-    "Zinger Burger"
-  ];
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch("/api/products"); // API call to get products
+        const data = await response.json();
+        setProducts(data.products); // Assuming the API returns an object with 'products' array
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+        setProducts([]);
+      }
+    }
 
-  // Array of prices corresponding to the burgers
-  const burgerPrices = [
-    { old: "$6.99", new: "$5.99" },
-    { old: "$7.99", new: "$6.99" },
-    { old: "$8.99", new: "$7.99" },
-    { old: "$6.99", new: "$5.49" },
-    { old: "$7.49", new: "$6.49" },
-    { old: "$10.99", new: "$8.99" },
-    { old: "$11.99", new: "$9.99" },
-    { old: "$5.99", new: "$4.99" },
-    { old: "$7.49", new: "$6.49" }
-  ];
+    fetchProducts();
+    const savedCart = localStorage.getItem("cart");
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
+    }
+  }, []);
+
+  const addToCart = (product: Product) => {
+    setCart((prevCart) => {
+      const updatedCart = [...prevCart, product];
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
+      return updatedCart;
+    });
+  };
+
+  const toggleCart = () => {
+    setShowCart((prev) => !prev);
+  };
+
+  const goToCheckout = () => {
+    setIsCheckout(true);
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("cart");
+  };
+
+  const handleCheckout = (e: React.FormEvent) => {
+    e.preventDefault();
+    alert("Order placed successfully!");
+    setCart([]);
+    localStorage.removeItem("cart");
+    setIsCheckout(false);
+  };
+
+  const closeCheckout = () => {
+    setIsCheckout(false);
+  };
 
   return (
-    <div className="relative text-center p-10">
+    <div className="relative min-h-screen py-6">
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 bg-cover bg-center opacity-10 animate-background"
         style={{
-          backgroundImage: `url("/images/your-background-image.jpg")`, // Replace with your background image path
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          zIndex: -1, // Ensure background is behind the content
+          backgroundImage:
+            "url('https://assets.epicurious.com/photos/5c745a108918ee7ab68daf79/1:1/w_1600,c_limit/Smashburger-recipe-120219.jpg')",
         }}
       ></div>
+      <div className="relative z-10">
+        <div className="max-w-6xl mx-auto text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-4">
+            Delicious Burger In our Menu
+          </h1>
+          <p className="text-xl text-white">
+            Explore our selection of mouth-watering burgers to order now!
+          </p>
+        </div>
 
-      {/* Headings */}
-      <h1 className="font-bold text-4xl mb-4 text-white z-10 relative pt-20">
-        Most Requested Items
-      </h1>
-      <h1 className="text-3xl text-white z-10 relative pb-10">
-        Order Now...!
-      </h1>
-
-      <section className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center gap-y-10 gap-x-14 mt-10 mb-5" id="Projects">
-        {productImages.map((image, index) => (
-          <div key={index} className="w-64 bg-gray-300 shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl z-10 relative">
-            <a href="#">
-              <img
-                src={image}
-                alt={`Product ${index + 1}`}
-                className="h-60 w-full object-cover rounded-t-xl"
-                style={{
-                  opacity: 1, // Ensure no opacity is applied to the image itself
-                  backgroundColor: 'transparent' // Ensure no background is applied
-                }}
+        {/* Product Section */}
+        <div className="max-w-6xl mx-auto p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {Array.isArray(products) &&
+            products.map((product) => (
+              <ProductCard
+                key={product.id}
+                {...product}
+                onAddToCart={addToCart} // Pass full product here
               />
-              <div className="px-4 py-3 bg-gradient-to-b from-black to-gray-700">
-                <span className="text-slate-500 mr-3 uppercase text-xs">Category</span>
-                <p className="text-lg font-bold text-red-700 truncate block capitalize">
-                  {burgerNames[index]} {/* Display the burger name dynamically */}
-                </p>
-                <p className="text-xl font-semibold text-white mt-2">
-                  <span className="line-through text-gray-400 mr-2">
-                    {burgerPrices[index].old} {/* Display the old price with a strikethrough */}
-                  </span>
-                  {burgerPrices[index].new} {/* Display the new price */}
-                </p>
-                {/* Add Shopping Cart Icon as a simple black icon */}
-                <div className="mt-4">
-                  <AiOutlineShoppingCart className="text-yellow-400 text-2xl cursor-pointer" /> {/* Shopping Cart Icon */}
-                </div>
+            ))}
+        </div>
+
+        {/* Cart Section */}
+        {!isCheckout && (
+          <div className="max-w-6xl mx-auto mt-8">
+            <button
+              onClick={toggleCart}
+              className="bg-yellow-400 text-white py-3 px-6 rounded-lg shadow-md hover:bg-lime-400 transition duration-300 ease-in-out"
+            >
+              {showCart ? "Hide Cart" : "View Cart"} ({cart.length} items)
+            </button>
+            {showCart && (
+              <div className="mt-6 bg-white p-6 rounded-lg shadow-lg">
+                <h2 className="text-4xl font-semibold text-lime-400">
+                  Your Cart Items Includes:
+                </h2>
+                {cart.length > 0 ? (
+                  <div>
+                    <ul>
+                      {cart.map((product, index) => (
+                        <li
+                          key={index}
+                          className="flex items-center justify-center mb-6 transform transition-all duration-300 ease-in-out"
+                        >
+                          <img
+                            src={product.image}
+                            alt={product.title}
+                            className="w-20 h-40 sm:w-24 inline-block  transition-transform duration-300 ease-in-out"
+                          />
+                          <span className="ml-4 text-lg font-medium text-slate-600">
+                            {product.title} - ${product.price}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="flex justify-between items-center mt-6 text-black">
+                      <span className="font-semibold text-xl">
+                        Total: $$ 
+                        {cart.reduce(
+                          (total, product) => total + product.price,
+                          0
+                        )}
+                      </span>
+                    </div>
+                    <div>
+                      <button
+                        onClick={goToCheckout}
+                        className="bg-lime-400 py-3 px-8 rounded-lg text-lg shadow-md hover:bg-yellow-400 transition duration-300 ease-in-out text-white transform hover:scale-110"
+                      >
+                        Proceed To Checkout
+                      </button>
+                      <button
+                        onClick={clearCart}
+                        className="bg-red-700 py-3 px-8 rounded-lg text-lg shadow-md hover:bg-yellow-400 transition duration-300 ease-in-out text-white transform hover:scale-110"
+                      >
+                        Clear Cart
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-lg text-slate-600">Your cart is empty!</p>
+                )}
               </div>
-            </a>
+            )}
           </div>
-        ))}
-      </section>
+        )}
+
+        {/* Checkout Section */}
+        {isCheckout && (
+          <div className="max-w-3xl mx-auto mt-8 bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-4xl font-semibold text-lime-400 mb-6">
+              Checkout
+            </h2>
+            <form onSubmit={handleCheckout}>
+              <div className="mb-4">
+                <label className="block text-lg font-medium text-gray-700">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-lg font-medium text-gray-700">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  required
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-lg font-medium text-gray-700">
+                  Address
+                </label>
+                <textarea
+                  required
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400"
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="bg-lime-400 py-3 px-8 rounded-lg text-lg shadow-md hover:bg-yellow-400 transition duration-300 ease-in-out text-white transform hover:scale-110"
+              >
+                Place Order
+              </button>
+            </form>
+            <button
+              onClick={closeCheckout}
+              className="bg-red-700 py-3 px-8 rounded-lg text-lg shadow-md hover:bg-yellow-400 transition duration-300 ease-in-out text-white transform hover:scale-110 mt-4"
+            >
+              Close Checkout
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default ProductCardGrid;
+export default Home;
